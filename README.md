@@ -5,32 +5,39 @@
 
 The `icebeRgPlot` package is the R implementation of a novel visualisation method described by Lythgoe et al., which is used for comparing current and prior treatment responses in oncology clinical research. 
 
-The iceberg plot displays current therapy response above a 'waterline' and prior therapy response below, allowing direct visual comparison of treatment sequencing efficacy on a patient-by-patient basis.
+The iceberg plot displays current therapy response above a 'waterline' and prior therapy response below, allowing direct visual comparison of treatment sequencing efficacy on a person-by-person basis.
 
 <p align="center"> <img src="iceberg_mod.svg" width="600" alt="iceberg plot's idea"> </p>
 
-This visualisation addresses a key gap in oncology data display, where current graphical methods fail to adequately show prior treatment responses, focusing only on current treatments in isolation.
+This visualisation addresses a gap in oncology data display, where current graphical methods fail to adequately show prior treatment responses, focusing only on current treatments in isolation.
 
 ### Background
 
-As described by Lythgoe et al., modern clinical cancer research increasingly relies on the visual communication of complex response and treatment sequencing data. The iceberg plot was developed to show what was previously 'hidden beneath the surface', i.e. the critical context of how patients responded to prior treatments.
-This code and its package implement the specific methodology described in the supplementary appendix of the original publication, including the distinctive patient ordering algorithm that places patients with maximum prior therapy response in the center, creating the characteristic 'iceberg' shape.
+As described by Lythgoe et al., modern clinical cancer research increasingly relies on the visual communication of complex response and treatment sequencing data. The iceberg plot was developed to show what was previously 'hidden beneath the surface', i.e. the critical context of how individuals responded to prior treatments.
+This code and its package implement the specific methodology described in the supplementary appendix of the original publication, including the distinctive person ordering algorithm that places individuals with maximum prior therapy response in the center, creating the characteristic 'iceberg' shape.
 
-### How to cite
+!! to check -- R code from 2022 did I include the von hoff criteria? should be in folder CHSR/previous_mac/R_work/iceberg_graph
 
-If you use this code or its package in your research, please cite:
+### Structure and use
 
-1. This R implementation:
-   ```
-   Franchini F. (2025). icebeRgPlot: R Package for visualising treatment responses in oncology. 
-   GitHub repository, https://github.com/fannychini/iceberg
-   ```
-   
-2. The original paper that introduced the iceberg plot concept:
-   ```
-   Mark P. Lythgoe, Timothée Olivier, Vinay Prasad. The iceberg plot, improving the visualisation of therapy response in oncology in the era of sequence-directed therapy,
-   European Journal of Cancer, Volume 159, 2021, Pages 56-59, ISSN 0959-8049, https://doi.org/10.1016/j.ejca.2021.09.034.
-   ```
+This repository consists of several R files:
+
+| File | Description | Main functions |
+|------|-------------|---------------|
+| `R/data_prep.R` | person ordering | `prepare_iceberg_locations()` |
+| `R/iceberg_plot.R` | core plotting | `iceberg_plot()`, `theme_iceberg()` |
+| `R/example.R` | workflow code | includes all functions |
+
+
+### Reseerch applications
+
+The iceberg plot can be leveraged for:
+
+1. **Treatment sequencing studies** -- comparing how current therapy performs against prior treatments
+2. **Precision oncology trials** -- evaluating whether genomically-matched therapies outperform previous standard approaches
+3. **Clinical decision support** -- helping clinicians visualise a therapy's efficacy in context
+4. **Exceptional responder analysis** -- identifying individuals who experience substantial benefit from a new therapy
+
 
 ### License
 
