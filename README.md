@@ -24,9 +24,9 @@ This repository consists of several R files:
 
 | File | Description | Main functions |
 |------|-------------|---------------|
-| `R/data_prep.R` | person ordering | `prepare_iceberg_locations()` |
-| `R/iceberg_plot.R` | core plotting | `iceberg_plot()`, `theme_iceberg()` |
-| `R/example.R` | workflow code | includes all functions |
+| `01_data_prep.R` | person ordering | `prepare_iceberg_data()` |
+| `02_iceberg_plot.R` | core plotting | `iceberg_plot()`, `theme_iceberg()` |
+| `03_example.R` | workflow code | includes all functions |
 
 
 ### Reseerch applications
@@ -38,6 +38,22 @@ The iceberg plot can be leveraged for:
 3. **Clinical decision support** -- helping clinicians visualise a therapy's efficacy in context
 4. **Exceptional responder analysis** -- identifying individuals who experience substantial benefit from a new therapy
 
+
+### How to cite
+
+If you use this code or its package in your research, please cite:
+
+1. This code/package R implementation:
+   ```
+   Franchini F. (2025). icebeRgPlot: R Package for visualising treatment responses in oncology. 
+   GitHub repository, https://github.com/fannychini/iceberg
+   ```
+   
+2. The original paper that introduced the iceberg plot concept:
+   ```
+   Mark P. Lythgoe, Timothée Olivier, Vinay Prasad. The iceberg plot, improving the visualisation of therapy response in oncology in the era of sequence-directed therapy,
+   European Journal of Cancer, Volume 159, 2021, Pages 56-59, ISSN 0959-8049, https://doi.org/10.1016/j.ejca.2021.09.034.
+   ```
 
 ### License
 
