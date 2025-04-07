@@ -1,8 +1,6 @@
 ## icebeRgPlot: Visualising treatment responses in oncology
 
-
 ### Overview
-
 The `icebeRgPlot` package is the R implementation of a novel visualisation method described by Lythgoe et al., which is used for comparing current and prior treatment responses in oncology clinical research. 
 
 The iceberg plot displays current therapy response above a 'waterline' and prior therapy response below, allowing direct visual comparison of treatment sequencing efficacy on a person-by-person basis.
@@ -12,25 +10,30 @@ The iceberg plot displays current therapy response above a 'waterline' and prior
 This visualisation addresses a gap in oncology data display, where current graphical methods fail to adequately show prior treatment responses, focusing only on current treatments in isolation.
 
 ### Background
-
 As described by Lythgoe et al., modern clinical cancer research increasingly relies on the visual communication of complex response and treatment sequencing data. The iceberg plot was developed to show what was previously 'hidden beneath the surface', i.e. the critical context of how individuals responded to prior treatments.
 This code and its package implement the specific methodology described in the supplementary appendix of the original publication, including the distinctive person ordering algorithm that places individuals with maximum prior therapy response in the center, creating the characteristic 'iceberg' shape.
 
-!! to check -- R code from 2022 did I include the von hoff criteria? should be in folder CHSR/previous_mac/R_work/iceberg_graph
-
 ### Structure and use
-
 This repository consists of several R files:
 
 | File | Description | Main functions |
 |------|-------------|---------------|
-| `01_data_prep.R` | person ordering | `prepare_iceberg_data()` |
-| `02_iceberg_plot.R` | core plotting | `iceberg_plot()`, `theme_iceberg()` |
+| `01_data_prep.R` | prepare data and person ordering | `iceberg_data()`, `long_to_wide()` |
+| `02_iceberg_plot.R` | core and fancy plotting | `iceberg_plot()`, `iceberg_theme()`, `iceberg_style()` |
 | `03_example.R` | workflow code | includes all functions |
 
+### Data requirements
+The data is expected to be in wide format, i.e. one row per person. This means that each person appears exactly once.
+If your data is in long format, you can either pivot to wide, or use the `long_to_wide()` function provided to help you with the pivoting.
 
-### Reseerch applications
+Required variables:
 
+- type and duration of 'prior therapy' 
+- type and duration of 'current therapy' 
+- other attributes needed, such as response to therapies, genomic alterations, etc. are in other columns
+
+
+### Research applications
 The iceberg plot can be leveraged for:
 
 1. **Treatment sequencing studies** -- comparing how current therapy performs against prior treatments
@@ -40,8 +43,7 @@ The iceberg plot can be leveraged for:
 
 
 ### How to cite
-
-If you use this code or its package in your research, please cite:
+If you use this code or its package (coming up) in your research, please cite:
 
 1. This code/package R implementation:
    ```

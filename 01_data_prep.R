@@ -21,7 +21,7 @@ sessionInfo()
 #' 
 #' @return a df with added x_location values for each person
 #
-prepare_iceberg_data <- function(data, patient_id, current_pfs, prior_pfs) {
+iceberg_data <- function(data, patient_id, current_pfs, prior_pfs) {
   # Check input data
   required_cols <- c(patient_id, current_pfs, prior_pfs)
   if (!all(required_cols %in% colnames(data))) {
@@ -134,6 +134,9 @@ long_to_wide <- function(data, patient_id, therapy_type, duration, response = NU
   
   return(wide_data)
 }
+
+
+## Von Hoff exntesion to finish up and include
 
 
 
