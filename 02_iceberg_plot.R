@@ -104,7 +104,7 @@ iceberg_theme <- function(base_size = 11,
       
       # text readability
       axis.text.y = ggplot2::element_text(size = base_size * 0.9, colour = "black"),
-      axis.text.x = ggplot2::element_text(size = base_size * 0.9, colour = "black", 
+      axis.text.x = ggplot2::element_text(size = base_size * 0.5, colour = "black", 
                                           angle = 45, hjust = 1),
       
       # title and subtitle more prominent
@@ -144,9 +144,9 @@ iceberg_theme <- function(base_size = 11,
 #' 
 #' @return a beautiful iceberg plot :)
 #' 
-iceberg_style <- function(waterline_colour = "#003366",
+iceberg_style <- function(waterline_colour = "#4575b4",
                           waterline_size = 1.2,
-                          treatment_colours = c("current" = "#003366", "prior" = "#6699CC"),
+                          treatment_colours = c("current" = "#91bfdb", "prior" = "#003366"),
                           response_colours = c(
                             "CR" = "#006400", 
                             "PR" = "#32CD32",
@@ -187,9 +187,9 @@ ggplot_add.iceberg_style <- function(object, plot, object_name) {
 }
 
 # S3 class for iceberg styling function
-iceberg_S3 <- function(waterline_colour = "#003366",
+iceberg_S3 <- function(waterline_colour = "#4575b4", 
                        waterline_size = 1.2,
-                       treatment_colours = c("current" = "#003366", "prior" = "#6699CC"),
+                       treatment_colours = c("current" = "#91bfdb", "prior" = "#003366"),
                        response_colours = c(
                          "CR" = "#006400", 
                          "PR" = "#32CD32",

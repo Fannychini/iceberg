@@ -69,17 +69,23 @@ print(plot)
 
 
 ## Use **iceberg_theme** and **iceberg_style** to icebergify your plot ----
-iceberg_plot <- iceberg_plot(data = data_prep,
+my_iceberg <- iceberg_plot(data = data_prep,
                              patient_id = "patient_id",
                              current_pfs = "sdt_pfs", 
                              prior_pfs = "prior_pfs") + 
-  iceberg_theme(base_size = 12) + 
+  iceberg_theme() + 
   iceberg_style() + 
-  # can change waterline_colour for ex:
-  # iceberg_style(waterline_colour = "black") +
-  labs(title = "Current vs prior treatment",
+  labs(title = "Current vs previous treatment",
        x = "person id",
        y = "PFS (months)")
 
+print(my_iceberg)
 
-print(iceberg_plot)
+
+# other example use modifying some parameters in theme and style
+iceberg_plot(data = data_prep,
+             patient_id = "patient_id",
+             current_pfs = "sdt_pfs", 
+             prior_pfs = "prior_pfs") + 
+  iceberg_theme(base_size = 12) + 
+  iceberg_style(waterline_colour = "black") 
