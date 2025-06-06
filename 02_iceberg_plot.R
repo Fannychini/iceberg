@@ -61,7 +61,8 @@ iceberg_plot <- function(data, patient_id,
       ggplot2::geom_point(data = annotated_data,
                           ggplot2::aes(x = .data[[patient_id]],
                                        y = 0, 
-                                       colour = response))
+                                       colour = response),
+                          inherit.aes = FALSE)
   }
   
   return(plot)
@@ -202,3 +203,56 @@ iceberg_S3 <- function(waterline_colour = "#4575b4",
          response_colours = response_colours),
     class = "iceberg_style")
 }
+
+
+#' @description
+#' Add Von Hoff exceptional responder indicators to iceberg plot
+#' 
+#' @param plot an iceberg plot ggplot2 object
+#' @param data df with Von Hoff ratios calculated (from calculate_von_hoff())
+#' @param patient_id col name for patient identifiers
+#' @param threshold threshold for exceptional response (default 1.3)
+#' @param label_exceptional whether to label exceptional responders (default TRUE)
+#' @param exceptional_colour colour for exceptional responder indicators (default #991535)
+#' 
+#' @return ggplot2 object with Von Hoff indicators added
+#' 
+visualise_von_hoff <- function(plot, data, patient_id, threshold = 1.3, 
+                               label_exceptional = TRUE,
+                               exceptional_colour = "#991535",
+                               indicator_type = "triangle") {
+  
+  # check if von_hoff_ratio exists in data
+  if (!"von_hoff_ratio" %in% colnames(data)) {
+    stop("Von Hoff ratio not found in data. Run calculate_von_hoff() first.")
+  }
+  
+  # highlight exceptional responders
+  if (!"exceptional_response" %in% colnames(data)) {
+    data$exceptional_response <- data$von_hoff_ratio >= threshold
+  }
+  
+  # get exceptional responders
+  exceptional <- data[data$exceptional_response, ]
+  
+  # add a star at the waterline for exceptional responders
+  if (label_exceptional && nrow(exceptional) > 0) {
+    plot <- plot +
+      ggplot2::geom_point(data = exceptional,
+                          ggplot2::aes(x = .data[[patient_id]], y = 0),
+                          # can change shape and size here
+                          shape = 8, 
+                          size = 3,
+                          colour = exceptional_colour,
+                          inherit.aes = FALSE)
+    # add caption 
+    plot <- plot +
+      ggplot2::labs(caption = paste0("Von Hoff exceptional responder (ratio ≥ ", threshold, ")")) +
+      ggplot2::theme(plot.caption = ggplot2::element_text(colour = exceptional_colour, 
+                                                          face = "bold",
+                                                          size = 10))
+  }
+
+  return(plot)
+}
+

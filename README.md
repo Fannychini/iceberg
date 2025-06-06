@@ -18,9 +18,13 @@ This repository consists of several R files:
 
 | File | Description | Main functions |
 |------|-------------|---------------|
-| `01_data_prep.R` | prepare data and person ordering | `iceberg_data()`, `long_to_wide()` |
-| `02_iceberg_plot.R` | core and fancy plotting | `iceberg_plot()`, `iceberg_theme()`, `iceberg_style()` |
+| `01_data_prep.R` | prepare data and person ordering | `iceberg_data()`, `long_to_wide()`, `calculate_von_hoff()` |
+| `02_iceberg_plot.R` | core and fancy plotting | `iceberg_plot()`, `iceberg_theme()`, `iceberg_style()`, `visualise_von_hoff()` |
 | `03_example.R` | workflow code | includes all functions |
+
+*Workflow overview*
+your_data -> long_to_wide(if_pivot_needed) -> iceberg_data(get_x_axis_location) -> calculate_von_hoff(calculate_pfs_ratio)
+iceberg_plot(basic_iceberg) -> iceberg_theme(if_want_fancy_theme) + iceberg_style(if_want_better_style) -> visualise_von_hoff(to_see_exceptional_responders)
 
 ### Data requirements
 The data is expected to be in wide format, i.e. one row per person. This means that each person appears exactly once.

@@ -33,7 +33,9 @@ wide_data <- readRDS(file = 'data/wide_data.RDS')
 
 
 ## Pivot if needed ----
-data_pivoted <- long_data %>%
+
+### Manually ----
+manual_pivoted <- long_data %>%
   # include all patient-specific attributes needed in id_cols
   pivot_wider(id_cols = c("patient_id", "age", "sex", "genomic_alteration", "cancer_type"),
     names_from = "therapy_type",
@@ -44,13 +46,16 @@ data_pivoted <- long_data %>%
     prior_response = response_prior,
     current_response = response_current)
 
-# check
-print(data_pivoted)
-rm(data_pivoted) # using `data` df loaded above
+### Using provided fct long_to_wide() ----
+fct_pivoted <- long_to_wide(long_data, 
+                             patient_id = "patient_id", 
+                             therapy_type = "therapy_type", 
+                             duration = "duration", 
+                             response = "response")
+  
 
-
-## Use **iceberg_data** to generate x axis location on plot ----
-data_prep <- iceberg_data(data = wide_data, 
+## Prepare x-axis location using iceberg_data() ----
+data_prep <- iceberg_data(data = fct_pivoted, 
                           patient_id = 'patient_id',
                           current_pfs = "sdt_pfs",
                           prior_pfs = "prior_pfs")
@@ -60,7 +65,7 @@ print(data_prep)
 length(unique(data_prep$x_location)) == length(unique(data_prep$patient_id))
 
 
-## Use **iceberg_plot** to generate basic iceberg plot ----
+## Basic iceberg plot using iceberg_plot() ----
 plot <- iceberg_plot(data_prep,
                      patient_id = "patient_id",
                      current_pfs = "sdt_pfs",
@@ -68,7 +73,7 @@ plot <- iceberg_plot(data_prep,
 print(plot)
 
 
-## Use **iceberg_theme** and **iceberg_style** to icebergify your plot ----
+## Icebergify plot using iceberg_theme() and iceberg_style() ----
 my_iceberg <- iceberg_plot(data = data_prep,
                              patient_id = "patient_id",
                              current_pfs = "sdt_pfs", 
@@ -89,3 +94,16 @@ iceberg_plot(data = data_prep,
              prior_pfs = "prior_pfs") + 
   iceberg_theme(base_size = 12) + 
   iceberg_style(waterline_colour = "black") 
+
+
+## Calculate Von Hoff ratio ----
+data_prep <- calculate_von_hoff(data_prep, 
+                                current_response = "sdt_pfs",
+                                prior_response = "prior_pfs")
+
+## Von Hoff on iceberg ----
+my_iceberg <- visualise_von_hoff(my_iceberg, 
+                                 data_prep, 
+                                 patient_id = "patient_id")
+
+print(my_iceberg)

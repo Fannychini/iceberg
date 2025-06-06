@@ -99,44 +99,114 @@ iceberg_data <- function(data, patient_id, current_pfs, prior_pfs) {
 
 # finish write up
 #' @description 
-#' convert data from long to wide format 
+#' convert data from long to wide format for icerberg plot
 #' 
-#' @param data df in long format where each id has multiple rows
-#' @param patient_id col name containing ids
-#' @param therapy_type col name indicating whether therapy is current or not ("prior", "current")
-#' @param duration col name containing therapy duration/PFS
-#' @param response column for response categories (optional)
+#' @param data df in long format where each patient has two rows (prior and current therapy)
+#' @param patient_id col name containing patient ids 
+#' @param therapy_type col name indicating therapy type with values "prior" and "current" 
+#' @param duration col name containing therapy duration/PFS - will be renamed if rename_output = TRUE
+#' @param response col name for response categories (optional) - will be renamed if rename_output = TRUE
+#' @param rename_output when TRUE, renames duration and response columns to match iceberg plot expectations (default TRUE)
+#' @param verbose when TRUE, prints messages about detected varying columns (default TRUE)
 #' 
-#' @return df in wide format with one row per id
+#' @return df in wide format with one row per patient, with:
+#'   - all patient-level attributes (columns that do not vary by therapy)
+#'   - all therapy-varying columns pivoted with "_prior" and "_current" suffixes
+#'   - prior_pfs and sdt_pfs (if rename_output = TRUE)
+#'   - prior_response and current_response (if response provided and rename_output = TRUE)
 #' 
-long_to_wide <- function(data, patient_id, therapy_type, duration, response = NULL) {
-  # Check for required packages
+long_to_wide <- function(data, patient_id, therapy_type, duration, response = NULL,
+                         rename_output = TRUE, verbose = TRUE) {
+  # check for required packages
   if (!requireNamespace("tidyverse", quietly = TRUE)) {
     stop("package 'tidyverse' needed for this function to work -- please install before running this function")
   }
   
-  # prep value columns to pivot
-  value_cols <- duration
-  if (!is.null(response)) {
-    value_cols <- c(value_cols, response)
+  # find which columns vary within id (between prior/current)
+  varying_cols <- data %>%
+    group_by(!!sym(patient_id)) %>%
+    summarise(across(everything(), ~n_distinct(.x) > 1)) %>%
+    select(-!!sym(patient_id)) %>%
+    summarise(across(everything(), any)) %>%
+    pivot_longer(everything()) %>%
+    filter(value) %>%
+    pull(name)
+  
+  # remove therapy_type from varying cols (ie itis the pivot column)
+  varying_cols <- setdiff(varying_cols, therapy_type)
+  
+  if (verbose && length(varying_cols) > 0) {
+    message("Detected columns that vary by therapy type: ", 
+            paste(varying_cols, collapse = ", "))
   }
   
-  # get all other columns (id attributes)
+  # identify true ID columns (those not varying within id)
   all_cols <- colnames(data)
-  value_and_key_cols <- c(patient_id, therapy_type, value_cols)
-  id_cols <- all_cols[!all_cols %in% value_and_key_cols]
+  id_cols <- setdiff(all_cols, c(varying_cols, therapy_type))
   
-  # add patient_id to id_cols if not already there
-  id_cols <- unique(c(patient_id, id_cols))
+  # ensure patient_id is in id_cols
+  if (!patient_id %in% id_cols) {
+    id_cols <- c(patient_id, id_cols)
+  }
   
-  # go for pivot
-  !TODO
+  # perform the pivot with ALL varying columns so that dont end up with multiple rows per id
+  wide_data <- data %>%
+    pivot_wider(id_cols = all_of(id_cols),
+                names_from = all_of(therapy_type),
+                values_from = all_of(varying_cols), 
+                names_sep = "_")
+  
+  # should have only one row per id
+  n_patients <- n_distinct(data[[patient_id]])
+  n_rows <- nrow(wide_data)
+  
+  if (n_rows != n_patients) {
+    stop(paste("pivoting failed: expected", n_patients, "rows but got", n_rows,
+               "\nthis might happen if patients have multiple 'prior' or 'current' records"))
+  }
+  
+  # rename key columns if requested
+  if (rename_output) {
+    rename_vec <- c()
+    if (paste0(duration, "_prior") %in% names(wide_data)) {
+      rename_vec["prior_pfs"] = paste0(duration, "_prior")
+      rename_vec["sdt_pfs"] = paste0(duration, "_current")
+    }
+    if (!is.null(response) && paste0(response, "_prior") %in% names(wide_data)) {
+      rename_vec["prior_response"] = paste0(response, "_prior")
+      rename_vec["current_response"] = paste0(response, "_current")
+    }
+    if (length(rename_vec) > 0) {
+      wide_data <- wide_data %>%
+        rename(!!!rename_vec)
+    }
+  }
   
   return(wide_data)
 }
 
 
-## Von Hoff exntesion to finish up and include
+## Von Hoff - latest version may 2025
+# need to add description
+calculate_von_hoff <- function(data, current_response, prior_response, threshold = 1.3) {
+  # validate inputs
+  if (!all(c(current_response, prior_response) %in% colnames(data))) {
+    stop("one or more specified columns not found in data")
+  }
+  
+  # calculate ratio
+  result <- data
+  result$von_hoff_ratio <- result[[current_response]] / result[[prior_response]]
+  
+  # NA if prior_response is 0 
+  result$von_hoff_ratio[result[[prior_response]] == 0] <- NA
+  
+  # exceptional response (NA if ratio is NA)
+  result$exceptional_response <- !is.na(result$von_hoff_ratio) & 
+    result$von_hoff_ratio >= threshold
+  
+  return(result)
+}
 
 
 
